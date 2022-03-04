@@ -159,6 +159,11 @@ emulated system will persist after execution. It does not accelerate execution
 significantly but can simplify the logic by avoiding the copy artifact step
 from the target system.
 
+#### `tmpfs_mountpoints`
+
+List of tmpfs mountpoints to create within the image. Can be useful to avoid
+writing to the image, for example with logs (/var/log) and cache (/var/cache).
+
 #### `cpu_info`
 
 Path to a fake cpu_info file to be used instead of `/proc/cpuinfo`. Default is

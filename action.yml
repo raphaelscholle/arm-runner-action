@@ -13,6 +13,10 @@ inputs:
     description: 'Bind mount repository instead of copying it'
     required: false
     default: 'no'
+  tmpfs_mountpoints:
+    description: 'Space separated list of paths to mount with tmpfs to avoid modifying the image'
+    required: false
+    default: ''
   cpu:
     description: 'CPU architecture, arm1176 for arm6vl (Pi Zero)'
     required: false
@@ -131,6 +135,14 @@ runs:
         fi
         sudo mount --bind ${cpu_info_path} ${{ steps.mount_image.outputs.mount }}/proc/cpuinfo
       shell: bash
+    - name: Mount tmpfs mountpoints
+      if: ${{ inputs.tmpfs_mountpoints != '' }}
+      run: |
+        for mountpoint in ${{ inputs.tmpfs_mountpoints }} ; do
+            sudo mkdir -p ${{ steps.mount_image.outputs.mount }}${mountpoint}
+            sudo mount -t tmpfs tmpfs ${{ steps.mount_image.outputs.mount }}${mountpoint}
+        done
+      shell: bash
     - name: Run commands
       run: |
         case "${{ inputs.debug }}" in
@@ -234,6 +246,13 @@ runs:
                 [ -z "${copy_artifact_path}" ] || sudo cp -Rp ${{ steps.mount_image.outputs.mount }}${repository_path}/${copy_artifact_path} ${{ inputs.copy_artifact_dest }}
             done <<< "${{ inputs.copy_artifact_path }};"
         fi
+      shell: bash
+    - name: Unmount tmpfs mountpoints
+      if: ${{ inputs.tmpfs_mountpoints != '' }}
+      run: |
+        for mountpoint in ${{ inputs.tmpfs_mountpoints }} ; do
+            sudo umount ${{ steps.mount_image.outputs.mount }}${mountpoint}
+        done
       shell: bash
     - name: Unmount CPU info
       if: ${{ inputs.cpu_info != '' }}

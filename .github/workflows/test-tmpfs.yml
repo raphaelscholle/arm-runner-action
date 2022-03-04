@@ -1,0 +1,12 @@
+name: Test tmpfs mountpoints
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./ # pguyot/arm-runner-action@HEAD
+      with:
+        tmpfs_mountpoints: /temporary
+        commands: |
+            dd if=/dev/zero of=/temporary/plenty_of_nulls bs=1048576 count=1024
