@@ -103,8 +103,8 @@ runs:
         cortex-a8)
             cpu="cortex-a8:max"
         ;;
-        cortex-a53)
-            cpu="max:cortex-a53"
+        cortex-a57)
+            cpu="max:cortex-a57"
         ;;
         *)
             cpu=${{ inputs.cpu }}
